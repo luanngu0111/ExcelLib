@@ -64,7 +64,10 @@ public class XLSXReader implements IExcelReader {
 			workbook = new XSSFWorkbook(excelFile);
 
 			// Get data sheet by sheet name or index of sheet.
-			Sheet datatypeSheet = workbook.getSheetAt(_configs.get_sheet_id());
+			Sheet datatypeSheet;
+			if (_configs.get_sheet_id()==-1)
+				datatypeSheet=workbook.getSheet(_configs.get_sheet_name());
+			else datatypeSheet = workbook.getSheetAt(_configs.get_sheet_id());
 			_content = readSheetXLSX(datatypeSheet);
 
 		} catch (FileNotFoundException e) {

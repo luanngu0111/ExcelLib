@@ -14,10 +14,15 @@ public class ExcelUtils {
 
 	private ExcelUtils() {
 		// TODO Auto-generated constructor stub
-		_sheet_id = 0;
+		_sheet_id = -1;
 		_sheet_name = "Sheet 1";
 		_header = new ArrayList<>();
 		_format = new ExcelFormat();
+	}
+	
+	public static ExcelUtils getNewInstance()
+	{
+		return new ExcelUtils();
 	}
 
 	public static ExcelUtils getInstance() {
