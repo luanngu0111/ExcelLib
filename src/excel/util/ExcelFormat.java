@@ -3,6 +3,10 @@
  */
 package excel.util;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -16,7 +20,6 @@ import org.apache.poi.ss.util.RegionUtil;
 import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTFont;
 
 /**
  * @author LuanNgu
@@ -30,7 +33,7 @@ public class ExcelFormat {
 	private HorizontalAlignment _hor_align;
 	private VerticalAlignment _ver_align;
 	private CellStyle _cell_style;
-	private CellRangeAddress _cell_range;
+	private List<CellRangeAddress> _cell_range;
 	private Sheet _sheet;
 
 	private class BorderFormat {
@@ -69,7 +72,7 @@ public class ExcelFormat {
 		this._hor_align = HorizontalAlignment.LEFT;
 		this._ver_align = VerticalAlignment.TOP;
 		this._cell_style = new XSSFCellStyle(new StylesTable());
-		this._cell_range = null;
+		this._cell_range = new ArrayList<CellRangeAddress>();
 		this._sheet = null;
 		this._boder_format = new BorderFormat(false, false, false, false);
 	}
@@ -183,28 +186,9 @@ public class ExcelFormat {
 	 */
 	public void set_cell_style(CellStyle cell_style) {
 		this._cell_style = cell_style;
-		setBorderCell(_boder_format);
-		set_fill_partern(_fill_partern);
-		set_font_style(_font_style);
-		set_foreground_color(_foreground_color);
-		set_hor_align(_hor_align);
-		set_ver_align(_ver_align);
 	}
 
-	/**
-	 * @return the _cell_range
-	 */
-	public CellRangeAddress get_cell_range() {
-		return _cell_range;
-	}
-
-	/**
-	 * @param _cell_range
-	 *            the _cell_range to set
-	 */
-	public void set_cell_range(CellRangeAddress _cell_range) {
-		this._cell_range = _cell_range;
-	}
+	
 
 	/**
 	 * @return the _sheet
@@ -221,26 +205,29 @@ public class ExcelFormat {
 		this._sheet = _sheet;
 	}
 
+	private void setBorderMergeCell(BorderFormat bf)
+	{
+		for (CellRangeAddress cellRangeAddress : _cell_range) {
+			
+			if (_boder_format.left) RegionUtil.setBorderLeft(_border_style, cellRangeAddress, _sheet);
+			if (_boder_format.right) RegionUtil.setBorderRight(_border_style, cellRangeAddress, _sheet);
+			if (_boder_format.top) RegionUtil.setBorderTop(_border_style, cellRangeAddress, _sheet);
+			if (_boder_format.bottom) RegionUtil.setBorderBottom(_border_style, cellRangeAddress, _sheet);
+			
+		}
+	}
 	private void setBorderCell(BorderFormat bf) {
 		if (_boder_format.left) {
 			_cell_style.setBorderLeft(_border_style);
-			if (_cell_range != null)
-				RegionUtil.setBorderLeft(_border_style, _cell_range, _sheet);
 		}
 		if (_boder_format.right) {
 			_cell_style.setBorderRight(_border_style);
-			if (_cell_range != null)
-				RegionUtil.setBorderRight(_border_style, _cell_range, _sheet);
 		}
 		if (_boder_format.top) {
 			_cell_style.setBorderTop(_border_style);
-			if (_cell_range != null)
-				RegionUtil.setBorderTop(_border_style, _cell_range, _sheet);
 		}
 		if (_boder_format.bottom) {
 			_cell_style.setBorderBottom(_border_style);
-			if (_cell_range != null)
-				RegionUtil.setBorderBottom(_border_style, _cell_range, _sheet);
 		}
 
 	}
@@ -248,6 +235,7 @@ public class ExcelFormat {
 	public void setBorderCell(boolean left, boolean right, boolean top, boolean bottom) {
 		this._boder_format = new BorderFormat(left, right, top, bottom);
 		setBorderCell(_boder_format);
+		setBorderMergeCell(_boder_format);
 	}
 
 	public void setBorderCell(boolean left, boolean right, boolean top, boolean bottom, BorderStyle style) {
@@ -256,12 +244,24 @@ public class ExcelFormat {
 	}
 
 	public CellRangeAddress mergeCell(int firstRow, int lastRow, int firstCol, int lastCol) {
-		_cell_range = new CellRangeAddress(firstRow, lastRow, firstCol, lastCol);
-		return _cell_range;
+		CellRangeAddress cell_range = new CellRangeAddress(firstRow, lastRow, firstCol, lastCol);
+		_cell_range.add(cell_range);
+		return cell_range;
 	}
 
+	private void addCellRangeToSheet()
+	{
+		for (CellRangeAddress cellRangeAddress : _cell_range) {
+			_sheet.addMergedRegion(cellRangeAddress);
+		}
+	}
 	public void refresh() {
-
+		setBorderCell(_boder_format);
+		set_fill_partern(_fill_partern);
+		set_font_style(_font_style);
+		set_foreground_color(_foreground_color);
+		set_hor_align(_hor_align);
+		set_ver_align(_ver_align);
 	}
 
 }
