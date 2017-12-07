@@ -67,7 +67,8 @@ public class XLSXWriter implements IExcelWriter {
 			}
 		}
 
-		_sheet = _workbook.createSheet(_configs.get_sheet_name());
+		_sheet = (_workbook.getSheet(_configs.get_sheet_name()) == null)
+				? _workbook.createSheet(_configs.get_sheet_name()) : _workbook.getSheet(_configs.get_sheet_name());
 	}
 
 	/*
