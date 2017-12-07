@@ -60,7 +60,7 @@ public class XLSXWriter implements IExcelWriter {
 				_workbook = new XSSFWorkbook(new FileInputStream(_file));
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
-
+				_workbook = new XSSFWorkbook();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
