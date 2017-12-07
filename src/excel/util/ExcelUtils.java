@@ -11,6 +11,7 @@ public class ExcelUtils {
 	private List<String> _header;
 	private ExcelFormat _format;
 	private static ExcelUtils _instance;
+	private boolean _overwrite = true;
 
 	private ExcelUtils() {
 		// TODO Auto-generated constructor stub
@@ -19,9 +20,8 @@ public class ExcelUtils {
 		_header = new ArrayList<>();
 		_format = new ExcelFormat();
 	}
-	
-	public static ExcelUtils getNewInstance()
-	{
+
+	public static ExcelUtils getNewInstance() {
 		return new ExcelUtils();
 	}
 
@@ -100,10 +100,19 @@ public class ExcelUtils {
 	}
 
 	/**
-	 * @param _format the _format to set
+	 * @param _format
+	 *            the _format to set
 	 */
 	public void set_format(ExcelFormat _format) {
 		this._format = _format;
+	}
+
+	public boolean isOverwrite() {
+		return _overwrite;
+	}
+
+	public void setOverwrite(boolean overwrite) {
+		this._overwrite = overwrite;
 	}
 
 }

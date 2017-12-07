@@ -4,11 +4,13 @@
 package excel.writer.service.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -42,13 +44,29 @@ public class XLSXWriter implements IExcelWriter {
 	}
 
 	/**
+	 * @throws IOException
+	 * @throws InvalidFormatException
 	 * 
 	 */
-	public XLSXWriter(String filename , ExcelUtils utl) {
+	public XLSXWriter(String filename, ExcelUtils utl) {
 		// TODO Auto-generated constructor stub
 		_file = new File(filename);
 		_configs = utl;
-		_workbook = new XSSFWorkbook();
+
+		if (utl.isOverwrite()) {
+			_workbook = new XSSFWorkbook();
+		} else {
+			try {
+				_workbook = new XSSFWorkbook(new FileInputStream(_file));
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 		_sheet = _workbook.createSheet(_configs.get_sheet_name());
 	}
 
@@ -63,14 +81,13 @@ public class XLSXWriter implements IExcelWriter {
 		// TODO Auto-generated method stub
 		fileWriter(content, filename, _configs.get_format());
 	}
-	
-	private void writeToSheet(List<String[]> content)
-	{
+
+	private void writeToSheet(List<String[]> content) {
 		int rowNum = 0;
 		// System.out.println("Creating excel");
 		Row headrow = _sheet.createRow(rowNum++);
 		int colNum = 0;
-	
+
 		for (String[] str : content) {
 			Row row = _sheet.createRow(rowNum++);
 			colNum = 0;
@@ -81,13 +98,14 @@ public class XLSXWriter implements IExcelWriter {
 			}
 		}
 	}
-	
+
 	/**
 	 * @param content
 	 * @param filename
-	 * @param format format of output excel
+	 * @param format
+	 *            format of output excel
 	 */
-	public void fileWriter(List<String[]> content, String filename, ExcelFormat format){
+	public void fileWriter(List<String[]> content, String filename, ExcelFormat format) {
 		writeToSheet(content);
 		CellStyle cellStyle = _workbook.createCellStyle();
 		XSSFFont font = _workbook.createFont();
@@ -96,7 +114,7 @@ public class XLSXWriter implements IExcelWriter {
 		format.set_cell_style(cellStyle);
 		format.set_sheet(_sheet);
 		format.refresh();
-		
+
 		System.out.println("...Formating content");
 		for (int i = 0; i <= _sheet.getLastRowNum(); i++) {
 			Row row = _sheet.getRow(i);
@@ -114,6 +132,5 @@ public class XLSXWriter implements IExcelWriter {
 			e.printStackTrace();
 		}
 	}
-	
 
 }
