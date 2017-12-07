@@ -86,7 +86,7 @@ public class XLSXWriter implements IExcelWriter {
 	private void writeToSheet(List<String[]> content) {
 		int rowNum = 0;
 		// System.out.println("Creating excel");
-		Row headrow = _sheet.createRow(rowNum++);
+//		Row headrow = _sheet.createRow(rowNum++);
 		int colNum = 0;
 
 		for (String[] str : content) {

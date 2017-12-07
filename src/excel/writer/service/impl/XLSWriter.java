@@ -70,6 +70,8 @@ public class XLSWriter implements IExcelWriter {
 				}
 
 			}
+			
+			Wbook.write();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (WriteException e) {

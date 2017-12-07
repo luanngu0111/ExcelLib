@@ -192,8 +192,6 @@ public class ExcelFormat {
 		this._cell_style = cell_style;
 	}
 
-	
-
 	/**
 	 * @return the _sheet
 	 */
@@ -209,17 +207,21 @@ public class ExcelFormat {
 		this._sheet = _sheet;
 	}
 
-	private void setBorderMergeCell(BorderFormat bf)
-	{
+	private void setBorderMergeCell(BorderFormat bf) {
 		for (CellRangeAddress cellRangeAddress : _cell_range) {
-			
-			if (_boder_format.left) RegionUtil.setBorderLeft(_border_style, cellRangeAddress, _sheet);
-			if (_boder_format.right) RegionUtil.setBorderRight(_border_style, cellRangeAddress, _sheet);
-			if (_boder_format.top) RegionUtil.setBorderTop(_border_style, cellRangeAddress, _sheet);
-			if (_boder_format.bottom) RegionUtil.setBorderBottom(_border_style, cellRangeAddress, _sheet);
-			
+
+			if (_boder_format.left)
+				RegionUtil.setBorderLeft(_border_style, cellRangeAddress, _sheet);
+			if (_boder_format.right)
+				RegionUtil.setBorderRight(_border_style, cellRangeAddress, _sheet);
+			if (_boder_format.top)
+				RegionUtil.setBorderTop(_border_style, cellRangeAddress, _sheet);
+			if (_boder_format.bottom)
+				RegionUtil.setBorderBottom(_border_style, cellRangeAddress, _sheet);
+
 		}
 	}
+
 	private void setBorderCell(BorderFormat bf) {
 		if (_boder_format.left) {
 			_cell_style.setBorderLeft(_border_style);
@@ -252,30 +254,33 @@ public class ExcelFormat {
 		_cell_range.add(cell_range);
 		return cell_range;
 	}
-	
+
 	public CellRangeAddress mergeCell(int firstRow, int lastRow, int firstCol, int lastCol, String value) {
 		CellRangeAddress cell_range = new CellRangeAddress(firstRow, lastRow, firstCol, lastCol);
 		_cell_range.add(cell_range);
 		_cell_range_value.add(value);
 		return cell_range;
 	}
-	
-	private void addCellRangeToSheet()
-	{
-		int i=0;
+
+	private void addCellRangeToSheet() {
+		int i = 0;
 		Row row = null;
+		if (_cell_range.size() > 0)
+			_sheet.shiftRows(0, _sheet.getLastRowNum(), 1);
 		for (CellRangeAddress cellRangeAddress : _cell_range) {
 			int row_num = cellRangeAddress.getFirstRow();
-			if (_sheet.getRow(row_num)==null)
+			if (_sheet.getRow(row_num) == null)
 				row = _sheet.createRow(row_num);
-			else 
+			else {
 				row = _sheet.getRow(row_num);
+			}
 			_sheet.addMergedRegion(cellRangeAddress);
 			int index = cellRangeAddress.getFirstColumn();
 			Cell cell = row.createCell(index);
 			cell.setCellValue(_cell_range_value.get(i++));
 		}
 	}
+
 	public void refresh() {
 		setBorderCell(_boder_format);
 		set_fill_partern(_fill_partern);
