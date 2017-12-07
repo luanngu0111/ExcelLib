@@ -95,7 +95,7 @@ public class XLSXWriter implements IExcelWriter {
 		format.set_font_style(font);
 		format.set_cell_style(cellStyle);
 		format.set_sheet(_sheet);
-		
+		format.refresh();
 		
 		System.out.println("...Formating content");
 		for (int i = 0; i <= _sheet.getLastRowNum(); i++) {

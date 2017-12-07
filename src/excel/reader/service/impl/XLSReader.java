@@ -97,13 +97,14 @@ public class XLSReader implements IExcelReader {
 	 */
 	private static List<String[]> readSheetXLS(jxl.Sheet sheet) {
 		List<String[]> lines = new ArrayList<>();
+		List<String> list = new ArrayList<>();
 		int row_num = sheet.getRows();
 		int col_num = sheet.getColumns();
 
 		for (int i = 0; i < row_num; i++) {
 			String[] row = new String[col_num];
 			List<jxl.Cell> rows = Arrays.asList(sheet.getRow(i));
-			row = (String[]) rows.stream().map(jxl.Cell::getContents).collect(Collectors.toList()).toArray();
+			rows.stream().map(c->c.getContents()).collect(Collectors.toList()).toArray(row);
 			lines.add(row);
 		}
 

@@ -9,10 +9,12 @@ import java.util.List;
 
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -34,6 +36,7 @@ public class ExcelFormat {
 	private VerticalAlignment _ver_align;
 	private CellStyle _cell_style;
 	private List<CellRangeAddress> _cell_range;
+	private List<String> _cell_range_value;
 	private Sheet _sheet;
 
 	private class BorderFormat {
@@ -73,6 +76,7 @@ public class ExcelFormat {
 		this._ver_align = VerticalAlignment.TOP;
 		this._cell_style = new XSSFCellStyle(new StylesTable());
 		this._cell_range = new ArrayList<CellRangeAddress>();
+		this._cell_range_value = new ArrayList<String>();
 		this._sheet = null;
 		this._boder_format = new BorderFormat(false, false, false, false);
 	}
@@ -248,11 +252,28 @@ public class ExcelFormat {
 		_cell_range.add(cell_range);
 		return cell_range;
 	}
-
+	
+	public CellRangeAddress mergeCell(int firstRow, int lastRow, int firstCol, int lastCol, String value) {
+		CellRangeAddress cell_range = new CellRangeAddress(firstRow, lastRow, firstCol, lastCol);
+		_cell_range.add(cell_range);
+		_cell_range_value.add(value);
+		return cell_range;
+	}
+	
 	private void addCellRangeToSheet()
 	{
+		int i=0;
+		Row row = null;
 		for (CellRangeAddress cellRangeAddress : _cell_range) {
+			int row_num = cellRangeAddress.getFirstRow();
+			if (_sheet.getRow(row_num)==null)
+				row = _sheet.createRow(row_num);
+			else 
+				row = _sheet.getRow(row_num);
 			_sheet.addMergedRegion(cellRangeAddress);
+			int index = cellRangeAddress.getFirstColumn();
+			Cell cell = row.createCell(index);
+			cell.setCellValue(_cell_range_value.get(i++));
 		}
 	}
 	public void refresh() {
@@ -262,6 +283,7 @@ public class ExcelFormat {
 		set_foreground_color(_foreground_color);
 		set_hor_align(_hor_align);
 		set_ver_align(_ver_align);
+		addCellRangeToSheet();
 	}
 
 }
