@@ -123,6 +123,7 @@ public class XLSXWriter implements IExcelWriter {
 				cell.setCellStyle(format.get_cell_style());
 			}
 		}
+		System.out.println("Finished formating");
 		try {
 			FileOutputStream outputStream = new FileOutputStream(filename);
 			_workbook.write(outputStream);
